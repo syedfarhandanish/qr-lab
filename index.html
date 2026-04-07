@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Lab | Pro Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3498db">
+    <link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
+
+    <div class="container">
+        <div class="app-header">
+            <h1>QR Lab</h1>
+            <button id="theme-toggle" title="Toggle Theme"></button>
+        </div>
+        
+        <p>Generate your free QR code instantly.</p>
+        
+        <div class="main-grid">
+            
+            <div class="left-panel">
+                
+                <div class="custom-dropdown" id="tabDropdown">
+                    <div class="dropdown-header" id="dropdownHeader">
+                        <div class="header-content">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg>
+                            Text
+                        </div>
+                        <svg class="chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path></svg>
+                    </div>
+
+                    <div class="dropdown-options">
+                        <button class="tab-btn active" data-target="tab-link">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg>
+                            Text
+                        </button>
+                        <button class="tab-btn" data-target="tab-wifi">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M2.828 9.858c5.06-5.06 13.282-5.06 18.344 0"></path></svg>
+                            Wi-Fi
+                        </button>
+                        <button class="tab-btn" data-target="tab-vcard">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z"></path></svg>
+                            Contact
+                        </button>
+                        <button class="tab-btn" data-target="tab-email">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"></path></svg>
+                            Email
+                        </button>
+                        <button class="tab-btn" data-target="tab-whatsapp">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.002 21c0 0 1.258-4.223 1.543-5.32a9.92 9.92 0 1 1 4.778 4.777c-1.098.285-5.32 1.543-5.32 1.543z"></path></svg>
+                            WhatsApp
+                        </button>
+                        <button class="tab-btn" data-target="tab-bulk">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"></path></svg>
+                            Bulk
+                        </button>
+                    </div>
+                </div>
+
+                <div id="tab-link" class="tab-content active">
+                    <div class="input-group">
+                        <input type="text" id="qr-input" placeholder="e.g., Hello World or https://website.com">
+                        <button class="clear-btn" id="clear-link-btn" title="Clear Text">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="tab-wifi" class="tab-content">
+                    <input type="text" id="wifi-ssid" placeholder="Network Name (SSID)">
+                    <input type="text" id="wifi-pass" placeholder="Password">
+                    <div class="input-group">
+                        <select id="wifi-type" style="flex-grow: 1;">
+                            <option value="WPA">WPA/WPA2 (Most Common)</option>
+                            <option value="WEP">WEP</option>
+                            <option value="nopass">No Password</option>
+                        </select>
+                        <button class="clear-btn" id="clear-wifi-btn" title="Clear Inputs">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                    <button id="print-wifi-btn" style="background-color: #9b59b6; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                        Print Wi-Fi Poster
+                    </button>
+                </div>
+
+                <div id="tab-vcard" class="tab-content">
+                    <div class="input-group">
+                        <input type="text" id="vc-fname" placeholder="First Name">
+                        <input type="text" id="vc-lname" placeholder="Last Name">
+                    </div>
+                    <input type="text" id="vc-phone" placeholder="Phone Number">
+                    <input type="text" id="vc-email" placeholder="Email Address">
+                    <div class="input-group">
+                        <input type="text" id="vc-company" placeholder="Company (Optional)">
+                        <button class="clear-btn" id="clear-vcard-btn" title="Clear Inputs">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="tab-email" class="tab-content">
+                    <input type="text" id="email-to" placeholder="To: (e.g., hello@example.com)">
+                    <input type="text" id="email-sub" placeholder="Subject">
+                    <div class="input-group">
+                        <input type="text" id="email-body" placeholder="Message body...">
+                        <button class="clear-btn" id="clear-email-btn" title="Clear Inputs">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="tab-whatsapp" class="tab-content">
+                    <input type="text" id="wa-phone" placeholder="Phone with Country Code (e.g., 923001234567)">
+                    <div class="input-group">
+                        <input type="text" id="wa-msg" placeholder="Pre-filled message...">
+                        <button class="clear-btn" id="clear-wa-btn" title="Clear Inputs">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="tab-bulk" class="tab-content">
+                    <div style="background: var(--panel-bg); padding: 15px; border-radius: 8px; border: 1px dashed var(--border-color); margin-bottom: 15px;">
+                        <p style="margin-top: 0; font-size: 14px; text-align: left;">
+                            Create up to 100 QR codes at once. Upload a <b>.csv</b> spreadsheet with two columns:<br>
+                            <code style="display:block; margin-top:5px; background:var(--input-bg); padding:5px; border-radius: 4px;">Filename, URL/Text</code>
+                        </p>
+                        <div style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+                            <label for="csv-input" class="upload-btn" style="background-color: #f39c12; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                Upload CSV File
+                            </label>
+                            <input type="file" id="csv-input" accept=".csv" style="display: none;">
+                            <span id="csv-file-name" style="font-size: 12px; color: var(--text-secondary);">No file chosen</span>
+                            
+                            <button id="bulk-generate-btn" style="background-color: #27ae60; display: none; align-items: center; justify-content: center; gap: 8px; width: 100%;">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+                                Generate & Download ZIP
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                
+                <div class="design-dropdown-container" id="designDropdownContainer">
+                    <div class="dropdown-header" id="toggle-design-btn">
+                        <div class="header-content">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L11.5 21v-6.568a2.25 2.25 0 00-.659-1.591L5.409 7.409A2.25 2.25 0 014.75 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"></path>
+                            </svg>
+                            Customize Design
+                        </div>
+                        <svg class="chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
+                        </svg>
+                    </div>
+
+                    <div id="design-options" class="design-options-panel">
+                        <div class="design-grid">
+                            <div class="control-group">
+                                <label>Shape:</label>
+                                <select id="dot-style">
+                                    <option value="square">Standard Squares</option>
+                                    <option value="dots">Smooth Dots</option>
+                                    <option value="rounded">Rounded</option>
+                                    <option value="classy">Classy</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>Size:</label>
+                                <select id="size-select">
+                                    <option value="200">Small (200px)</option>
+                                    <option value="400" selected>Medium (400px)</option>
+                                    <option value="600">Large (600px)</option>
+                                    <option value="800">High-Res (800px)</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>QR Color:</label>
+                                <input type="color" id="fg-color" value="#000000">
+                            </div>
+                            <div class="control-group">
+                                <label>Background:</label>
+                                <input type="color" id="bg-color" value="#ffffff">
+                            </div>
+                            
+                            <div class="control-group" style="grid-column: span 2;">
+                                <label>Error Correction (Higher = Better for Logos):</label>
+                                <select id="error-correction">
+                                    <option value="L">Low (7% Damage Allowed)</option>
+                                    <option value="M">Medium (15% Damage Allowed)</option>
+                                    <option value="Q">Quartile (25% Damage Allowed)</option>
+                                    <option value="H" selected>High (30% Damage Allowed - Best for Logos)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="logo-upload-area">
+                            <label for="logo-input" class="upload-btn" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                Upload Custom Logo
+                            </label>
+                            <input type="file" id="logo-input" accept="image/png, image/jpeg" style="display: none;">
+                            <button id="remove-logo-btn" class="clear-btn" style="display: none; padding: 0 16px; width: auto;">Remove Logo</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="qr-wrapper" id="qr-wrapper-container">
+                    <div id="qr-code"></div>
+                    <button id="download-btn" title="Download Image">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    </button>
+                </div>
+
+                <div id="history-section" style="display: none;">
+                    <div class="history-header">
+                        <h3>Recent History</h3>
+                        <button id="clear-history-btn">Clear All</button>
+                    </div>
+                    <div id="history-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="seo-section">
+        <h2>Frequently Asked Questions</h2>
+        
+        <div class="faq-item">
+            <h3>Is QR Lab really free to use?</h3>
+            <p>Yes, 100% free! There are no hidden fees, subscriptions, or scan limits. You can generate as many QR codes as you want, and they will never expire.</p>
+        </div>
+        
+        <div class="faq-item">
+            <h3>Do these QR codes expire?</h3>
+            <p>No, the QR codes generated by QR Lab are completely static. This means the destination data is encoded directly into the image. They will work forever as long as the destination (like your website link) remains active.</p>
+        </div>
+        
+        <div class="faq-item">
+            <h3>How do I make QR Codes in bulk?</h3>
+            <p>Use the "Bulk" tab in our generator! Simply create a spreadsheet in Excel or Google Sheets. In column A, type the filename you want. In column B, paste the link or text. Save the file as a .CSV, upload it here, and our tool will compress all your QR codes into a single ZIP file instantly.</p>
+        </div>
+
+        <div class="faq-item">
+            <h3>Why should I add a custom logo?</h3>
+            <p>Adding a logo to the center of your QR code increases brand recognition and trust. People are much more likely to scan a code if they recognize the brand logo inside it.</p>
+        </div>
+
+        <div class="faq-item">
+            <h3>What is Error Correction Level?</h3>
+            <p>Error correction allows a QR code to be readable even if part of it is covered, damaged, or blurred. If you are adding a custom logo to the center of your code, we highly recommend keeping the Error Correction on "High" to ensure it scans perfectly every time.</p>
+        </div>
+
+        <div class="faq-item">
+            <h3>Can I use these QR codes for commercial print?</h3>
+            <p>Absolutely! For the best print results, open the "Customize Design" menu and select the <b>High-Res (800px)</b> option. The downloaded PNG image will be razor-sharp, making it perfect for business cards, flyers, posters, and product packaging.</p>
+        </div>
+    </div>
+
+    <footer>
+        <div style="margin-bottom: 15px; display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;">
+            <a href="about.html" style="color: var(--primary-color); text-decoration: none; font-weight: 600; font-size: 14px;">About Us</a>
+            <a href="privacy.html" style="color: var(--primary-color); text-decoration: none; font-weight: 600; font-size: 14px;">Privacy Policy</a>
+            <a href="terms.html" style="color: var(--primary-color); text-decoration: none; font-weight: 600; font-size: 14px;">Terms of Service</a>
+            <a href="contact.html" style="color: var(--primary-color); text-decoration: none; font-weight: 600; font-size: 14px;">Contact</a>
+        </div>
+        <p>&copy; 2026 QR Lab. Designed and built by <b>Collabs Developers</b>.</p>
+    </footer>
+
+    <div id="toast-container"></div>
+
+    <div id="print-area">
+        <div class="print-wrapper">
+            <h1>Scan to Connect</h1>
+            <p class="print-instruction">Point your phone's camera at the code below to join instantly.</p>
+            <img id="print-qr-img" src="" alt="Wi-Fi QR Code">
+            <div class="print-details">
+                <h2>Network: <span id="print-ssid-text"></span></h2>
+                <h3>Password: <span id="print-pass-text"></span></h3>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
+    <script type="module" src="js/main.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropdown = document.getElementById('tabDropdown');
+            const header = document.getElementById('dropdownHeader');
+            const headerContent = header.querySelector('.header-content');
+            const tabBtns = dropdown.querySelectorAll('.tab-btn');
+
+            header.addEventListener('click', () => dropdown.classList.toggle('open'));
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    headerContent.innerHTML = btn.innerHTML;
+                    dropdown.classList.remove('open');
+                });
+            });
+
+            const designContainer = document.getElementById('designDropdownContainer');
+            const toggleDesignBtn = document.getElementById('toggle-design-btn');
+            const designOptions = document.getElementById('design-options');
+            const designChevron = toggleDesignBtn.querySelector('.chevron');
+
+            toggleDesignBtn.addEventListener('click', () => {
+                designContainer.classList.toggle('open');
+                if (designContainer.classList.contains('open')) {
+                    designOptions.style.display = 'block';
+                } else {
+                    designOptions.style.display = 'none';
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!dropdown.contains(e.target)) dropdown.classList.remove('open');
+                if (!designContainer.contains(e.target)) {
+                    designContainer.classList.remove('open');
+                    designOptions.style.display = 'none';
+                    if(designChevron) designChevron.style.transform = 'rotate(0deg)';
+                }
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('theme-toggle');
+            const body = document.body;
+
+            const sunIcon = `<svg width="28" height="28" fill="none" stroke="#f59e0b" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
+            const moonIcon = `<svg width="28" height="28" fill="none" stroke="#3b82f6" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path></svg>`;
+
+            if (localStorage.getItem('theme') === 'dark') {
+                body.classList.add('dark-mode');
+                themeToggle.innerHTML = sunIcon;
+            } else {
+                body.classList.remove('dark-mode');
+                themeToggle.innerHTML = moonIcon;
+            }
+
+            themeToggle.addEventListener('click', () => {
+                body.classList.toggle('dark-mode');
+                if (body.classList.contains('dark-mode')) {
+                    localStorage.setItem('theme', 'dark');
+                    themeToggle.innerHTML = sunIcon;
+                } else {
+                    localStorage.setItem('theme', 'light');
+                    themeToggle.innerHTML = moonIcon;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
