@@ -1,389 +1,586 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free Bulk QR Code Generator | QR Lab by Collabs Developers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <script>
+        // Apply saved/system theme before first paint (prevents a light flash in dark mode)
+        (function () {
+            var d = document.documentElement, t = null;
+            try { t = localStorage.getItem('theme'); } catch (e) {}
+            if (!t) t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            d.setAttribute('data-theme', t);
+            d.classList.remove('no-js');
+        })();
+    </script>
+
+    <title>Free QR Code Generator with Logo, Bulk &amp; Wi-Fi | QR Lab</title>
+    <meta name="description" content="Create free custom QR codes with your logo and colors, or generate hundreds at once from a CSV. Wi-Fi, vCard, WhatsApp, email, SMS. No sign-up, never expires.">
+    <meta name="keywords" content="QR code generator, free QR code generator, QR code with logo, bulk QR code generator, Wi-Fi QR code, vCard QR code, WhatsApp QR code, SVG QR code, QR Lab, Collabs Developers">
+    <meta name="author" content="Collabs Developers">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+    <link rel="canonical" href="https://www.qrlab.eu.org/">
+
+    <!-- Open Graph / social previews -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="QR Lab">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:url" content="https://www.qrlab.eu.org/">
+    <meta property="og:title" content="QR Lab — Free QR Code Generator with Logo &amp; Bulk CSV">
+    <meta property="og:description" content="Custom, high-res QR codes for links, Wi-Fi, contacts and WhatsApp. Bulk generate from CSV. 100% free, private and never expires.">
+    <meta property="og:image" content="https://www.qrlab.eu.org/icons/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="QR Lab — free QR code generator with logos, bulk CSV, Wi-Fi and vCard">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="QR Lab — Free QR Code Generator with Logo &amp; Bulk CSV">
+    <meta name="twitter:description" content="Custom, high-res QR codes. Bulk generate from CSV. 100% free, private and never expires.">
+    <meta name="twitter:image" content="https://www.qrlab.eu.org/icons/og-image.png">
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#f6f8fc" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0b1120" media="(prefers-color-scheme: dark)">
+    <meta name="application-name" content="QR Lab">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="QR Lab">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" href="/favicon.ico" sizes="48x48">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+
+    <!-- Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preload" href="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js" as="script" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&display=swap">
+    <link rel="stylesheet" href="/style.css">
+
     <script type="application/ld+json">
     {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "QR Lab",
-    "alternateName": ["QR Lab by Collabs Developers", "QRLab"],
-    "url": "https://www.qrlab.eu.org/"
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://www.qrlab.eu.org/#website",
+          "name": "QR Lab",
+          "alternateName": ["QR Lab by Collabs Developers", "QRLab"],
+          "url": "https://www.qrlab.eu.org/",
+          "inLanguage": "en",
+          "publisher": { "@id": "https://www.qrlab.eu.org/#org" }
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://www.qrlab.eu.org/#org",
+          "name": "Collabs Developers",
+          "url": "https://www.qrlab.eu.org/",
+          "logo": { "@type": "ImageObject", "url": "https://www.qrlab.eu.org/icons/icon-512.png", "width": 512, "height": 512 }
+        },
+        {
+          "@type": "WebApplication",
+          "@id": "https://www.qrlab.eu.org/#app",
+          "name": "QR Lab — Free QR Code Generator",
+          "url": "https://www.qrlab.eu.org/",
+          "description": "Free online QR code generator with custom logos, colors and shapes, bulk CSV generation, and Wi-Fi, vCard, email, SMS, phone and WhatsApp QR codes. Runs entirely in your browser.",
+          "applicationCategory": "UtilitiesApplication",
+          "operatingSystem": "Any (web browser)",
+          "browserRequirements": "Requires JavaScript",
+          "isAccessibleForFree": true,
+          "image": "https://www.qrlab.eu.org/icons/og-image.png",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "featureList": [
+            "Custom logo in QR code",
+            "Custom colors, gradients and dot shapes",
+            "Bulk QR code generation from CSV to ZIP",
+            "Wi-Fi, vCard, email, SMS, phone and WhatsApp QR codes",
+            "PNG and SVG download up to 800px",
+            "Printable Wi-Fi poster",
+            "Works offline as an installable app"
+          ],
+          "publisher": { "@id": "https://www.qrlab.eu.org/#org" }
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            { "@type": "Question", "name": "Is QR Lab really free to use?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, 100% free. There are no hidden fees, subscriptions, sign-ups or scan limits. You can generate as many QR codes as you want, and they will never expire." } },
+            { "@type": "Question", "name": "Do these QR codes expire?", "acceptedAnswer": { "@type": "Answer", "text": "No. QR codes made with QR Lab are static: the content is encoded directly into the image. They keep working forever, as long as the destination (like your website link) stays online." } },
+            { "@type": "Question", "name": "How do I make QR codes in bulk?", "acceptedAnswer": { "@type": "Answer", "text": "Open the Bulk CSV tab. Create a spreadsheet in Excel or Google Sheets with the file name in column A and the link or text in column B, save it as .csv, and upload it. QR Lab generates every code with your chosen design and downloads them together as a single ZIP file." } },
+            { "@type": "Question", "name": "Is my data private?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Every QR code is generated locally in your browser. Your links, Wi-Fi passwords, contact details and logos are never uploaded to any server." } },
+            { "@type": "Question", "name": "Why should I add a custom logo?", "acceptedAnswer": { "@type": "Answer", "text": "A logo in the center of your QR code increases brand recognition and trust, and people are more likely to scan a code when they recognize the brand. QR Lab automatically switches error correction to High when you add a logo so the code still scans reliably." } },
+            { "@type": "Question", "name": "What is the error correction level?", "acceptedAnswer": { "@type": "Answer", "text": "Error correction lets a QR code be read even when part of it is covered, damaged or blurred. If you add a logo, keep error correction on High (30%) so the code scans every time." } },
+            { "@type": "Question", "name": "Can I use these QR codes for commercial print?", "acceptedAnswer": { "@type": "Answer", "text": "Absolutely. Choose the High-Res (800px) size for a sharp PNG, or download the SVG vector file, which scales to any size without losing quality. Both are ideal for business cards, flyers, posters and packaging." } },
+            { "@type": "Question", "name": "Can I install QR Lab as an app?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. QR Lab is a Progressive Web App. Use the Install button, or Add to Home Screen on your phone, and it opens like a native app and keeps working offline." } }
+          ]
+        }
+      ]
     }
     </script>
-    <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#3498db">
-    <link rel="apple-touch-icon" href="icon-192.png">
-    
-    <meta name="description" content="Generate high-res, custom QR codes in bulk instantly. No expiration, completely free, and privacy-focused. Built by Collabs Developers.">
-    <meta name="keywords" content="QR Lab, Collabs Developers, bulk QR generator, free QR code, no expiration QR, custom QR logo, Pakistan tech, eLearning tools">
-    <meta name="author" content="Collabs Developers">
-
-    <meta property="og:title" content="QR Lab | Professional QR Generator">
-    <meta property="og:description" content="Generate high-res, custom QR codes in bulk. 100% free and private. Built by Collabs Developers.">
-    <meta property="og:url" content="https://www.qrlab.eu.org/">
-    <meta property="og:type" content="website">
 
     <script defer src="/_vercel/insights/script.js"></script>
-
     <script defer src="/_vercel/speed-insights/script.js"></script>
 </head>
 <body>
+    <a class="skip-link" href="#generator">Skip to generator</a>
+    <div class="bg-orbs" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="bg-grid" aria-hidden="true"></div>
 
-    <div class="container">
-        <div class="app-header">
-            <h1>QR Lab</h1>
-            <button id="theme-toggle" title="Toggle Theme"></button>
+    <header class="site-header" id="site-header">
+        <div class="wrap">
+            <a class="brand" href="/" aria-label="QR Lab home">
+                <img src="/icons/icon-192.png" alt="" width="34" height="34">
+                QR Lab
+            </a>
+            <nav class="nav-links" aria-label="Primary">
+                <a href="#generator">Generator</a>
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How it works</a>
+                <a href="#faq">FAQ</a>
+            </nav>
+            <div class="header-actions">
+                <button class="btn btn-ghost btn-sm" id="install-btn" data-install hidden>
+                    <svg class="i"><use href="/icons/sprite.svg#i-install"/></svg>Install app
+                </button>
+                <button class="icon-btn theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+                    <svg class="i icon-moon"><use href="/icons/sprite.svg#i-moon"/></svg>
+                    <svg class="i icon-sun"><use href="/icons/sprite.svg#i-sun"/></svg>
+                </button>
+            </div>
         </div>
-        
-        <p>Generate your free QR code instantly.</p>
-        
-        <div class="main-grid">
-            
-            <div class="left-panel">
-                
-                <div class="custom-dropdown" id="tabDropdown">
-                    <div class="dropdown-header" id="dropdownHeader">
-                        <div class="header-content">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg>
-                            Text
+    </header>
+
+    <main>
+        <section class="hero wrap" aria-labelledby="hero-title">
+            <span class="eyebrow"><span class="dot"></span>100% free · No sign-up · Codes never expire</span>
+            <h1 id="hero-title">Free QR Code Generator with <span class="gradient-text">Logo, Bulk &amp; Wi-Fi</span></h1>
+            <p class="lead">Design beautiful, high-resolution QR codes for links, Wi-Fi, contacts, WhatsApp and more, or generate hundreds at once from a CSV. Everything runs privately in your browser.</p>
+            <div class="hero-ctas">
+                <a class="btn btn-primary" href="#generator"><svg class="i"><use href="/icons/sprite.svg#i-sparkles"/></svg>Create a QR code</a>
+                <a class="btn btn-ghost" href="/?type=bulk#generator" data-type-link="bulk"><svg class="i"><use href="/icons/sprite.svg#i-sheet"/></svg>Bulk from CSV</a>
+            </div>
+            <ul class="trust-row">
+                <li><svg class="i"><use href="/icons/sprite.svg#i-check"/></svg>No watermarks</li>
+                <li><svg class="i"><use href="/icons/sprite.svg#i-check"/></svg>PNG &amp; SVG</li>
+                <li><svg class="i"><use href="/icons/sprite.svg#i-check"/></svg>Custom logo</li>
+                <li><svg class="i"><use href="/icons/sprite.svg#i-check"/></svg>Works offline</li>
+            </ul>
+        </section>
+
+        <!-- ================= GENERATOR ================= -->
+        <section class="wrap" id="generator" aria-label="QR code generator">
+            <div class="generator">
+                <div class="editor-col">
+                    <h2 class="panel-title"><span class="step">1</span>Choose a QR code type</h2>
+                    <div class="type-grid" role="tablist" aria-label="QR code type">
+                        <button class="type-btn" role="tab" id="tabbtn-link" aria-controls="tab-link" aria-selected="true" data-type="link"><svg class="i"><use href="/icons/sprite.svg#i-link"/></svg>URL / Text</button>
+                        <button class="type-btn" role="tab" id="tabbtn-wifi" aria-controls="tab-wifi" aria-selected="false" tabindex="-1" data-type="wifi"><svg class="i"><use href="/icons/sprite.svg#i-wifi"/></svg>Wi-Fi</button>
+                        <button class="type-btn" role="tab" id="tabbtn-vcard" aria-controls="tab-vcard" aria-selected="false" tabindex="-1" data-type="vcard"><svg class="i"><use href="/icons/sprite.svg#i-contact"/></svg>Contact</button>
+                        <button class="type-btn" role="tab" id="tabbtn-email" aria-controls="tab-email" aria-selected="false" tabindex="-1" data-type="email"><svg class="i"><use href="/icons/sprite.svg#i-mail"/></svg>Email</button>
+                        <button class="type-btn" role="tab" id="tabbtn-whatsapp" aria-controls="tab-whatsapp" aria-selected="false" tabindex="-1" data-type="whatsapp"><svg class="i"><use href="/icons/sprite.svg#i-whatsapp"/></svg>WhatsApp</button>
+                        <button class="type-btn" role="tab" id="tabbtn-sms" aria-controls="tab-sms" aria-selected="false" tabindex="-1" data-type="sms"><svg class="i"><use href="/icons/sprite.svg#i-sms"/></svg>SMS</button>
+                        <button class="type-btn" role="tab" id="tabbtn-phone" aria-controls="tab-phone" aria-selected="false" tabindex="-1" data-type="phone"><svg class="i"><use href="/icons/sprite.svg#i-phone"/></svg>Phone</button>
+                        <button class="type-btn" role="tab" id="tabbtn-bulk" aria-controls="tab-bulk" aria-selected="false" tabindex="-1" data-type="bulk"><svg class="i"><use href="/icons/sprite.svg#i-sheet"/></svg>Bulk CSV</button>
+                    </div>
+
+                    <h2 class="panel-title"><span class="step">2</span>Add your content</h2>
+
+                    <div class="tab-panel" id="tab-link" role="tabpanel" aria-labelledby="tabbtn-link">
+                        <div class="fields">
+                            <div class="field">
+                                <label for="qr-input">Website URL or any text</label>
+                                <div class="input-wrap">
+                                    <input class="input" type="text" id="qr-input" inputmode="url" autocomplete="off" placeholder="https://your-website.com">
+                                    <button class="inline-btn" type="button" data-clear="tab-link" aria-label="Clear"><svg class="i"><use href="/icons/sprite.svg#i-x"/></svg></button>
+                                </div>
+                            </div>
                         </div>
-                        <svg class="chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path></svg>
                     </div>
 
-                    <div class="dropdown-options">
-                        <button class="tab-btn active" data-target="tab-link">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg>
-                            Text
-                        </button>
-                        <button class="tab-btn" data-target="tab-wifi">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M2.828 9.858c5.06-5.06 13.282-5.06 18.344 0"></path></svg>
-                            Wi-Fi
-                        </button>
-                        <button class="tab-btn" data-target="tab-vcard">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z"></path></svg>
-                            Contact
-                        </button>
-                        <button class="tab-btn" data-target="tab-email">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"></path></svg>
-                            Email
-                        </button>
-                        <button class="tab-btn" data-target="tab-whatsapp">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.002 21c0 0 1.258-4.223 1.543-5.32a9.92 9.92 0 1 1 4.778 4.777c-1.098.285-5.32 1.543-5.32 1.543z"></path></svg>
-                            WhatsApp
-                        </button>
-                        <button class="tab-btn" data-target="tab-bulk">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"></path></svg>
-                            Bulk
-                        </button>
+                    <div class="tab-panel" id="tab-wifi" role="tabpanel" aria-labelledby="tabbtn-wifi" hidden>
+                        <div class="fields">
+                            <div class="field">
+                                <label for="wifi-ssid">Network name (SSID)</label>
+                                <input class="input" type="text" id="wifi-ssid" autocomplete="off" placeholder="e.g. Cafe_Guest">
+                            </div>
+                            <div class="field-row">
+                                <div class="field">
+                                    <label for="wifi-pass">Password</label>
+                                    <input class="input" type="text" id="wifi-pass" autocomplete="off" placeholder="Wi-Fi password">
+                                </div>
+                                <div class="field">
+                                    <label for="wifi-type">Security</label>
+                                    <select class="select" id="wifi-type">
+                                        <option value="WPA">WPA / WPA2 / WPA3</option>
+                                        <option value="WEP">WEP</option>
+                                        <option value="nopass">No password</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <label class="toggle"><input type="checkbox" id="wifi-hidden"> Hidden network</label>
+                        </div>
+                        <div class="panel-actions">
+                            <button class="btn btn-ghost btn-sm" type="button" id="print-wifi-btn"><svg class="i"><use href="/icons/sprite.svg#i-printer"/></svg>Print Wi-Fi poster</button>
+                            <button class="btn btn-ghost btn-sm" type="button" data-clear="tab-wifi"><svg class="i"><use href="/icons/sprite.svg#i-trash"/></svg>Clear</button>
+                        </div>
                     </div>
-                </div>
 
-                <div id="tab-link" class="tab-content active">
-                    <div class="input-group">
-                        <input type="text" id="qr-input" placeholder="e.g., Hello World or https://website.com">
-                        <button class="clear-btn" id="clear-link-btn" title="Clear Text">
-                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
+                    <div class="tab-panel" id="tab-vcard" role="tabpanel" aria-labelledby="tabbtn-vcard" hidden>
+                        <div class="fields">
+                            <div class="field-row">
+                                <div class="field"><label for="vc-fname">First name</label><input class="input" type="text" id="vc-fname" autocomplete="off" placeholder="Jane"></div>
+                                <div class="field"><label for="vc-lname">Last name</label><input class="input" type="text" id="vc-lname" autocomplete="off" placeholder="Doe"></div>
+                            </div>
+                            <div class="field-row">
+                                <div class="field"><label for="vc-phone">Phone</label><input class="input" type="tel" id="vc-phone" autocomplete="off" placeholder="+1 555 123 4567"></div>
+                                <div class="field"><label for="vc-email">Email</label><input class="input" type="email" id="vc-email" autocomplete="off" placeholder="jane@company.com"></div>
+                            </div>
+                            <div class="field-row">
+                                <div class="field"><label for="vc-company">Company <small>(optional)</small></label><input class="input" type="text" id="vc-company" autocomplete="off" placeholder="Company Inc."></div>
+                                <div class="field"><label for="vc-title">Job title <small>(optional)</small></label><input class="input" type="text" id="vc-title" autocomplete="off" placeholder="Designer"></div>
+                            </div>
+                            <div class="field"><label for="vc-url">Website <small>(optional)</small></label><input class="input" type="url" id="vc-url" autocomplete="off" placeholder="https://company.com"></div>
+                        </div>
+                        <div class="panel-actions"><button class="btn btn-ghost btn-sm" type="button" data-clear="tab-vcard"><svg class="i"><use href="/icons/sprite.svg#i-trash"/></svg>Clear</button></div>
                     </div>
-                </div>
 
-                <div id="tab-wifi" class="tab-content">
-                    <input type="text" id="wifi-ssid" placeholder="Network Name (SSID)">
-                    <input type="text" id="wifi-pass" placeholder="Password">
-                    <div class="input-group">
-                        <select id="wifi-type" style="flex-grow: 1;">
-                            <option value="WPA">WPA/WPA2 (Most Common)</option>
-                            <option value="WEP">WEP</option>
-                            <option value="nopass">No Password</option>
-                        </select>
-                        <button class="clear-btn" id="clear-wifi-btn" title="Clear Inputs">
-                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
+                    <div class="tab-panel" id="tab-email" role="tabpanel" aria-labelledby="tabbtn-email" hidden>
+                        <div class="fields">
+                            <div class="field"><label for="email-to">Send to</label><input class="input" type="email" id="email-to" autocomplete="off" placeholder="hello@example.com"></div>
+                            <div class="field"><label for="email-sub">Subject</label><input class="input" type="text" id="email-sub" autocomplete="off" placeholder="Subject"></div>
+                            <div class="field"><label for="email-body">Message</label><textarea class="input" id="email-body" placeholder="Message body…"></textarea></div>
+                        </div>
+                        <div class="panel-actions"><button class="btn btn-ghost btn-sm" type="button" data-clear="tab-email"><svg class="i"><use href="/icons/sprite.svg#i-trash"/></svg>Clear</button></div>
                     </div>
-                    <button id="print-wifi-btn" style="background-color: #9b59b6; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;">
-                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                        Print Wi-Fi Poster
-                    </button>
-                </div>
 
-                <div id="tab-vcard" class="tab-content">
-                    <div class="input-group">
-                        <input type="text" id="vc-fname" placeholder="First Name">
-                        <input type="text" id="vc-lname" placeholder="Last Name">
+                    <div class="tab-panel" id="tab-whatsapp" role="tabpanel" aria-labelledby="tabbtn-whatsapp" hidden>
+                        <div class="fields">
+                            <div class="field">
+                                <label for="wa-phone">WhatsApp number</label>
+                                <input class="input" type="tel" id="wa-phone" autocomplete="off" placeholder="923001234567">
+                                <p class="hint">Include the country code, digits only (no + or leading zeros).</p>
+                            </div>
+                            <div class="field"><label for="wa-msg">Pre-filled message <small>(optional)</small></label><textarea class="input" id="wa-msg" placeholder="Hi! I'd like to know more about…"></textarea></div>
+                        </div>
+                        <div class="panel-actions"><button class="btn btn-ghost btn-sm" type="button" data-clear="tab-whatsapp"><svg class="i"><use href="/icons/sprite.svg#i-trash"/></svg>Clear</button></div>
                     </div>
-                    <input type="text" id="vc-phone" placeholder="Phone Number">
-                    <input type="text" id="vc-email" placeholder="Email Address">
-                    <div class="input-group">
-                        <input type="text" id="vc-company" placeholder="Company (Optional)">
-                        <button class="clear-btn" id="clear-vcard-btn" title="Clear Inputs">
-                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
-                    </div>
-                </div>
 
-                <div id="tab-email" class="tab-content">
-                    <input type="text" id="email-to" placeholder="To: (e.g., hello@example.com)">
-                    <input type="text" id="email-sub" placeholder="Subject">
-                    <div class="input-group">
-                        <input type="text" id="email-body" placeholder="Message body...">
-                        <button class="clear-btn" id="clear-email-btn" title="Clear Inputs">
-                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
+                    <div class="tab-panel" id="tab-sms" role="tabpanel" aria-labelledby="tabbtn-sms" hidden>
+                        <div class="fields">
+                            <div class="field"><label for="sms-phone">Phone number</label><input class="input" type="tel" id="sms-phone" autocomplete="off" placeholder="+1 555 123 4567"></div>
+                            <div class="field"><label for="sms-msg">Message <small>(optional)</small></label><textarea class="input" id="sms-msg" placeholder="Text message…"></textarea></div>
+                        </div>
+                        <div class="panel-actions"><button class="btn btn-ghost btn-sm" type="button" data-clear="tab-sms"><svg class="i"><use href="/icons/sprite.svg#i-trash"/></svg>Clear</button></div>
                     </div>
-                </div>
 
-                <div id="tab-whatsapp" class="tab-content">
-                    <input type="text" id="wa-phone" placeholder="Phone with Country Code (e.g., 923001234567)">
-                    <div class="input-group">
-                        <input type="text" id="wa-msg" placeholder="Pre-filled message...">
-                        <button class="clear-btn" id="clear-wa-btn" title="Clear Inputs">
-                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
+                    <div class="tab-panel" id="tab-phone" role="tabpanel" aria-labelledby="tabbtn-phone" hidden>
+                        <div class="fields">
+                            <div class="field">
+                                <label for="tel-phone">Phone number</label>
+                                <div class="input-wrap">
+                                    <input class="input" type="tel" id="tel-phone" autocomplete="off" placeholder="+1 555 123 4567">
+                                    <button class="inline-btn" type="button" data-clear="tab-phone" aria-label="Clear"><svg class="i"><use href="/icons/sprite.svg#i-x"/></svg></button>
+                                </div>
+                                <p class="hint">Scanning the code opens the dialer with this number.</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <div id="tab-bulk" class="tab-content">
-                    <div style="background: var(--panel-bg); padding: 15px; border-radius: 8px; border: 1px dashed var(--border-color); margin-bottom: 15px;">
-                        <p style="margin-top: 0; font-size: 14px; text-align: left;">
-                            Create up to 100 QR codes at once. Upload a <b>.csv</b> spreadsheet with two columns:<br>
-                            <code style="display:block; margin-top:5px; background:var(--input-bg); padding:5px; border-radius: 4px;">Filename, URL/Text</code>
-                        </p>
-                        <div style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
-                            <label for="csv-input" class="upload-btn" style="background-color: #f39c12; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                Upload CSV File
+                    <div class="tab-panel" id="tab-bulk" role="tabpanel" aria-labelledby="tabbtn-bulk" hidden>
+                        <div class="fields">
+                            <div class="callout">
+                                Generate up to <strong>500 QR codes</strong> at once. Upload a <strong>.csv</strong> file with two columns. Your design settings below are applied to every code.
+                                <code>file_name, URL or text
+menu_table_1, https://myrestaurant.com/menu?t=1
+menu_table_2, https://myrestaurant.com/menu?t=2</code>
+                                <p style="margin-top:10px"><a href="#" id="sample-csv">Download a sample CSV</a></p>
+                            </div>
+                            <label class="dropzone" for="csv-input" id="csv-drop">
+                                <span class="dz-icon"><svg class="i"><use href="/icons/sprite.svg#i-upload"/></svg></span>
+                                <span><strong id="csv-file-name">Choose or drop a CSV file</strong><small id="csv-file-info">.csv · up to 500 rows</small></span>
+                                <input type="file" id="csv-input" accept=".csv,text/csv">
                             </label>
-                            <input type="file" id="csv-input" accept=".csv" style="display: none;">
-                            <span id="csv-file-name" style="font-size: 12px; color: var(--text-secondary);">No file chosen</span>
-                            
-                            <button id="bulk-generate-btn" style="background-color: #27ae60; display: none; align-items: center; justify-content: center; gap: 8px; width: 100%;">
-                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
-                                Generate & Download ZIP
-                            </button>
+                            <div class="progress" id="bulk-progress" hidden><div></div></div>
+                            <button class="btn btn-primary btn-block" type="button" id="bulk-generate-btn" disabled><svg class="i"><use href="/icons/sprite.svg#i-download"/></svg><span>Generate &amp; download ZIP</span></button>
                         </div>
+                    </div>
+
+                    <details class="design-panel" id="design-panel">
+                        <summary><svg class="i"><use href="/icons/sprite.svg#i-palette"/></svg>Customize design<svg class="i chev"><use href="/icons/sprite.svg#i-chevron"/></svg></summary>
+                        <div class="design-body">
+                            <div class="field">
+                                <span class="label">Color presets</span>
+                                <div class="swatches" id="swatches">
+                                    <button type="button" class="swatch" style="--sw:#000000" data-fg="#000000" data-bg="#ffffff" aria-label="Classic black" aria-pressed="true"></button>
+                                    <button type="button" class="swatch" style="--sw:#0369a1" data-fg="#0369a1" data-bg="#ffffff" aria-label="Ocean blue" aria-pressed="false"></button>
+                                    <button type="button" class="swatch" style="--sw:#047857" data-fg="#047857" data-bg="#ffffff" aria-label="Forest green" aria-pressed="false"></button>
+                                    <button type="button" class="swatch" style="--sw:#6d28d9" data-fg="#6d28d9" data-bg="#ffffff" aria-label="Grape purple" aria-pressed="false"></button>
+                                    <button type="button" class="swatch" style="--sw:#be123c" data-fg="#be123c" data-bg="#ffffff" aria-label="Rose red" aria-pressed="false"></button>
+                                    <button type="button" class="swatch" style="--sw:#c2410c" data-fg="#c2410c" data-bg="#fff7ed" aria-label="Sunset orange" aria-pressed="false"></button>
+                                    <button type="button" class="swatch" style="--sw:linear-gradient(135deg,#0369a1,#0f766e)" data-fg="#0369a1" data-fg2="#0f766e" data-bg="#ffffff" aria-label="Brand gradient" aria-pressed="false"></button>
+                                    <button type="button" class="swatch" style="--sw:linear-gradient(135deg,#7c3aed,#db2777)" data-fg="#7c3aed" data-fg2="#db2777" data-bg="#ffffff" aria-label="Violet to pink gradient" aria-pressed="false"></button>
+                                </div>
+                            </div>
+
+                            <div class="grid-2">
+                                <div class="field">
+                                    <label for="fg-color">QR color</label>
+                                    <div class="color-field"><input type="color" id="fg-color" value="#000000"><code id="fg-hex">#000000</code></div>
+                                </div>
+                                <div class="field">
+                                    <label for="bg-color">Background</label>
+                                    <div class="color-field"><input type="color" id="bg-color" value="#ffffff"><code id="bg-hex">#ffffff</code></div>
+                                </div>
+                            </div>
+                            <div class="grid-2">
+                                <label class="toggle"><input type="checkbox" id="use-gradient"> Gradient</label>
+                                <div class="color-field" id="fg2-wrap" hidden><input type="color" id="fg2-color" value="#0f766e" aria-label="Gradient end color"><code id="fg2-hex">#0f766e</code></div>
+                            </div>
+                            <p class="contrast-warn" id="contrast-warn" hidden><svg class="i"><use href="/icons/sprite.svg#i-alert"/></svg>Low contrast. Some phones may not scan this; use a darker QR color on a light background.</p>
+
+                            <div class="field">
+                                <span class="label" id="dot-style-label">Dot shape</span>
+                                <div class="chip-group" role="radiogroup" aria-labelledby="dot-style-label">
+                                    <label class="chip"><input type="radio" name="dot-style" value="square" checked><span>Square</span></label>
+                                    <label class="chip"><input type="radio" name="dot-style" value="dots"><span>Dots</span></label>
+                                    <label class="chip"><input type="radio" name="dot-style" value="rounded"><span>Rounded</span></label>
+                                    <label class="chip"><input type="radio" name="dot-style" value="extra-rounded"><span>Extra rounded</span></label>
+                                    <label class="chip"><input type="radio" name="dot-style" value="classy"><span>Classy</span></label>
+                                    <label class="chip"><input type="radio" name="dot-style" value="classy-rounded"><span>Classy rounded</span></label>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <span class="label" id="corner-style-label">Corner style</span>
+                                <div class="chip-group" role="radiogroup" aria-labelledby="corner-style-label">
+                                    <label class="chip"><input type="radio" name="corner-style" value="square" checked><span>Square</span></label>
+                                    <label class="chip"><input type="radio" name="corner-style" value="extra-rounded"><span>Rounded</span></label>
+                                    <label class="chip"><input type="radio" name="corner-style" value="dot"><span>Circle</span></label>
+                                </div>
+                            </div>
+
+                            <div class="field-row">
+                                <div class="field">
+                                    <label for="size-select">Download size</label>
+                                    <select class="select" id="size-select">
+                                        <option value="300">Small (300px)</option>
+                                        <option value="500">Medium (500px)</option>
+                                        <option value="800" selected>High-res (800px)</option>
+                                        <option value="1200">Print (1200px)</option>
+                                    </select>
+                                </div>
+                                <div class="field">
+                                    <label for="error-correction">Error correction</label>
+                                    <select class="select" id="error-correction">
+                                        <option value="L">Low (7%)</option>
+                                        <option value="M">Medium (15%)</option>
+                                        <option value="Q">Quartile (25%)</option>
+                                        <option value="H" selected>High (30%), best for logos</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <span class="label">Logo</span>
+                                <label class="dropzone" for="logo-input" id="logo-drop">
+                                    <span class="dz-icon" id="logo-thumb"><svg class="i"><use href="/icons/sprite.svg#i-image"/></svg></span>
+                                    <span><strong id="logo-label">Upload your logo</strong><small>PNG, JPG or SVG · placed in the center</small></span>
+                                    <input type="file" id="logo-input" accept="image/png,image/jpeg,image/svg+xml,image/webp">
+                                </label>
+                                <button class="btn-danger-text" type="button" id="remove-logo-btn" hidden>Remove logo</button>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="preview-col">
+                    <div class="preview-sticky">
+                        <h2 class="panel-title"><span class="step">3</span>Preview &amp; download</h2>
+                        <div class="preview-card">
+                            <div class="qr-stage">
+                                <div id="qr-code" hidden></div>
+                                <div class="qr-empty" id="qr-empty">
+                                    <div>
+                                        <svg class="i"><use href="/icons/sprite.svg#i-qr"/></svg>
+                                        <strong>Your QR code appears here</strong>
+                                        <p>Start typing and it updates live.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="qr-meta" id="qr-meta" aria-live="polite"></p>
+                            <div class="preview-actions">
+                                <button class="btn btn-primary" type="button" id="download-btn" disabled><svg class="i"><use href="/icons/sprite.svg#i-download"/></svg>Download PNG</button>
+                                <button class="btn btn-ghost btn-sm" type="button" id="download-svg-btn" disabled><svg class="i"><use href="/icons/sprite.svg#i-code"/></svg>SVG</button>
+                                <button class="btn btn-ghost btn-sm" type="button" id="copy-btn" disabled><svg class="i"><use href="/icons/sprite.svg#i-copy"/></svg>Copy</button>
+                                <button class="btn btn-ghost btn-sm" type="button" id="share-btn" disabled hidden><svg class="i"><use href="/icons/sprite.svg#i-share"/></svg>Share</button>
+                            </div>
+                        </div>
+
+                        <section class="history" id="history-section" aria-labelledby="history-title" hidden>
+                            <div class="history-head">
+                                <h2 id="history-title">Recent downloads</h2>
+                                <button class="btn-danger-text" type="button" id="clear-history-btn">Clear all</button>
+                            </div>
+                            <ul class="history-list" id="history-list"></ul>
+                        </section>
                     </div>
                 </div>
             </div>
+        </section>
 
-            <div class="right-panel">
-                
-                <div class="design-dropdown-container" id="designDropdownContainer">
-                    <div class="dropdown-header" id="toggle-design-btn">
-                        <div class="header-content">
-                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L11.5 21v-6.568a2.25 2.25 0 00-.659-1.591L5.409 7.409A2.25 2.25 0 014.75 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"></path>
-                            </svg>
-                            Customize Design
-                        </div>
-                        <svg class="chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
-                        </svg>
-                    </div>
+        <!-- ================= FEATURES ================= -->
+        <section class="section wrap" id="features" aria-labelledby="features-title">
+            <div class="section-head reveal">
+                <span class="section-kicker">Why QR Lab</span>
+                <h2 id="features-title">Everything you need in a QR code maker, free</h2>
+                <p>Professional features that other generators lock behind a subscription.</p>
+            </div>
+            <div class="card-grid">
+                <article class="card reveal">
+                    <div class="card-icon"><svg class="i"><use href="/icons/sprite.svg#i-infinity"/></svg></div>
+                    <h3>Never expires</h3>
+                    <p>Static QR codes with your data encoded directly. No redirects, no subscriptions, no codes held hostage.</p>
+                </article>
+                <article class="card reveal">
+                    <div class="card-icon"><svg class="i"><use href="/icons/sprite.svg#i-layers"/></svg></div>
+                    <h3>Bulk QR generation</h3>
+                    <p>Upload a CSV and get hundreds of named QR code images in a single ZIP file, in seconds.</p>
+                </article>
+                <article class="card reveal">
+                    <div class="card-icon"><svg class="i"><use href="/icons/sprite.svg#i-palette"/></svg></div>
+                    <h3>Logo, colors &amp; shapes</h3>
+                    <p>Add your logo, pick brand colors or gradients, and choose dot and corner styles that match your brand.</p>
+                </article>
+                <article class="card reveal">
+                    <div class="card-icon"><svg class="i"><use href="/icons/sprite.svg#i-shield"/></svg></div>
+                    <h3>Private by design</h3>
+                    <p>Codes are generated on your device. Wi-Fi passwords, contacts and logos are never uploaded.</p>
+                </article>
+                <article class="card reveal">
+                    <div class="card-icon"><svg class="i"><use href="/icons/sprite.svg#i-printer"/></svg></div>
+                    <h3>Print-ready files</h3>
+                    <p>Download crisp PNGs up to 1200px or infinitely scalable SVG vectors for flyers, packaging and signage.</p>
+                </article>
+                <article class="card reveal">
+                    <div class="card-icon"><svg class="i"><use href="/icons/sprite.svg#i-offline"/></svg></div>
+                    <h3>Install &amp; use offline</h3>
+                    <p>Add QR Lab to your home screen or desktop. It launches instantly and works without an internet connection.</p>
+                </article>
+            </div>
+        </section>
 
-                    <div id="design-options" class="design-options-panel">
-                        <div class="design-grid">
-                            <div class="control-group">
-                                <label>Shape:</label>
-                                <select id="dot-style">
-                                    <option value="square">Standard Squares</option>
-                                    <option value="dots">Smooth Dots</option>
-                                    <option value="rounded">Rounded</option>
-                                    <option value="classy">Classy</option>
-                                </select>
-                            </div>
-                            <div class="control-group">
-                                <label>Size:</label>
-                                <select id="size-select">
-                                    <option value="200">Small (200px)</option>
-                                    <option value="400" selected>Medium (400px)</option>
-                                    <option value="600">Large (600px)</option>
-                                    <option value="800">High-Res (800px)</option>
-                                </select>
-                            </div>
-                            <div class="control-group">
-                                <label>QR Color:</label>
-                                <input type="color" id="fg-color" value="#000000">
-                            </div>
-                            <div class="control-group">
-                                <label>Background:</label>
-                                <input type="color" id="bg-color" value="#ffffff">
-                            </div>
-                            
-                            <div class="control-group" style="grid-column: span 2;">
-                                <label>Error Correction (Higher = Better for Logos):</label>
-                                <select id="error-correction">
-                                    <option value="L">Low (7% Damage Allowed)</option>
-                                    <option value="M">Medium (15% Damage Allowed)</option>
-                                    <option value="Q">Quartile (25% Damage Allowed)</option>
-                                    <option value="H" selected>High (30% Damage Allowed - Best for Logos)</option>
-                                </select>
-                            </div>
-                        </div>
+        <!-- ================= HOW IT WORKS ================= -->
+        <section class="section wrap" id="how-it-works" aria-labelledby="how-title" style="padding-top:0">
+            <div class="section-head reveal">
+                <span class="section-kicker">How it works</span>
+                <h2 id="how-title">Create a custom QR code in 3 steps</h2>
+            </div>
+            <ol class="steps">
+                <li class="reveal"><h3>Pick a type &amp; add content</h3><p>Paste a link, or enter Wi-Fi details, a contact card, an email, SMS, phone number or WhatsApp chat.</p></li>
+                <li class="reveal"><h3>Make it yours</h3><p>Choose colors, gradients, dot shapes and corner styles, then drop in your logo. The preview updates live.</p></li>
+                <li class="reveal"><h3>Download &amp; share</h3><p>Save as PNG or SVG, copy to clipboard, or share straight from your phone. Then test it with your camera.</p></li>
+            </ol>
+        </section>
 
-                        <div class="logo-upload-area">
-                            <label for="logo-input" class="upload-btn" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                                Upload Custom Logo
-                            </label>
-                            <input type="file" id="logo-input" accept="image/png, image/jpeg" style="display: none;">
-                            <button id="remove-logo-btn" class="clear-btn" style="display: none; padding: 0 16px; width: auto;">Remove Logo</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="qr-wrapper" id="qr-wrapper-container">
-                    <div id="qr-code"></div>
-                    <button id="download-btn" title="Download Image">
-                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                    </button>
-                </div>
+        <!-- ================= USE CASES ================= -->
+        <section class="section wrap" aria-labelledby="uses-title" style="padding-top:0">
+            <div class="section-head reveal">
+                <span class="section-kicker">Use cases</span>
+                <h2 id="uses-title">QR codes for every business and occasion</h2>
+            </div>
+            <ul class="usecases reveal">
+                <li><span aria-hidden="true">🍽️</span>Restaurant menus</li>
+                <li><span aria-hidden="true">💼</span>Business cards</li>
+                <li><span aria-hidden="true">📶</span>Guest Wi-Fi</li>
+                <li><span aria-hidden="true">🎟️</span>Events &amp; tickets</li>
+                <li><span aria-hidden="true">📦</span>Product packaging</li>
+                <li><span aria-hidden="true">🏫</span>Classrooms &amp; eLearning</li>
+                <li><span aria-hidden="true">🏠</span>Real estate signs</li>
+                <li><span aria-hidden="true">📣</span>Flyers &amp; posters</li>
+                <li><span aria-hidden="true">💬</span>WhatsApp support</li>
+                <li><span aria-hidden="true">🧾</span>Invoices &amp; receipts</li>
+            </ul>
+        </section>
 
-                <div id="history-section" style="display: none;">
-                    <div class="history-header">
-                        <h3>Recent History</h3>
-                        <button id="clear-history-btn">Clear All</button>
-                    </div>
-                    <div id="history-list"></div>
+        <!-- ================= FAQ ================= -->
+        <section class="section wrap" id="faq" aria-labelledby="faq-title" style="padding-top:0">
+            <div class="section-head reveal">
+                <span class="section-kicker">FAQ</span>
+                <h2 id="faq-title">Frequently asked questions</h2>
+            </div>
+            <div class="faq">
+                <details open><summary><h3>Is QR Lab really free to use?</h3></summary><div class="answer"><p>Yes, 100% free. There are no hidden fees, subscriptions, sign-ups or scan limits. You can generate as many QR codes as you want, and they will never expire.</p></div></details>
+                <details><summary><h3>Do these QR codes expire?</h3></summary><div class="answer"><p>No. QR codes made with QR Lab are static: the content is encoded directly into the image. They keep working forever, as long as the destination (like your website link) stays online.</p></div></details>
+                <details><summary><h3>How do I make QR codes in bulk?</h3></summary><div class="answer"><p>Open the <a href="/?type=bulk#generator" data-type-link="bulk">Bulk CSV</a> tab. Create a spreadsheet in Excel or Google Sheets with the file name in column A and the link or text in column B, save it as .csv, and upload it. QR Lab generates every code with your chosen design and downloads them together as a single ZIP file.</p></div></details>
+                <details><summary><h3>Is my data private?</h3></summary><div class="answer"><p>Yes. Every QR code is generated locally in your browser. Your links, Wi-Fi passwords, contact details and logos are never uploaded to any server.</p></div></details>
+                <details><summary><h3>Why should I add a custom logo?</h3></summary><div class="answer"><p>A logo in the center of your QR code increases brand recognition and trust, and people are more likely to scan a code when they recognize the brand. QR Lab automatically switches error correction to High when you add a logo so the code still scans reliably.</p></div></details>
+                <details><summary><h3>What is the error correction level?</h3></summary><div class="answer"><p>Error correction lets a QR code be read even when part of it is covered, damaged or blurred. If you add a logo, keep error correction on High (30%) so the code scans every time.</p></div></details>
+                <details><summary><h3>Can I use these QR codes for commercial print?</h3></summary><div class="answer"><p>Absolutely. Choose the High-Res (800px) size for a sharp PNG, or download the SVG vector file, which scales to any size without losing quality. Both are ideal for business cards, flyers, posters and packaging.</p></div></details>
+                <details><summary><h3>Can I install QR Lab as an app?</h3></summary><div class="answer"><p>Yes. QR Lab is a Progressive Web App. Use the Install button, or Add to Home Screen on your phone, and it opens like a native app and keeps working offline.</p></div></details>
+            </div>
+        </section>
+
+        <section class="wrap" aria-label="Get started">
+            <div class="cta-band reveal">
+                <h2>Make your first QR code in seconds</h2>
+                <p>No account, no watermark, no expiry. Just a great-looking QR code that works.</p>
+                <div class="hero-ctas" style="margin-top:0">
+                    <a class="btn btn-light" href="#generator"><svg class="i"><use href="/icons/sprite.svg#i-sparkles"/></svg>Start generating</a>
+                    <button class="btn btn-outline-light" type="button" data-install hidden><svg class="i"><use href="/icons/sprite.svg#i-install"/></svg>Install the app</button>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
-    <div class="seo-section">
-        <h2>Frequently Asked Questions</h2>
-        
-        <div class="faq-item">
-            <h3>Is QR Lab really free to use?</h3>
-            <p>Yes, 100% free! There are no hidden fees, subscriptions, or scan limits. You can generate as many QR codes as you want, and they will never expire.</p>
+    <footer class="site-footer">
+        <div class="wrap">
+            <div class="footer-grid">
+                <div>
+                    <a class="brand" href="/"><img src="/icons/icon-192.png" alt="" width="34" height="34" loading="lazy">QR Lab</a>
+                    <p>A free, private QR code generator with logos, bulk CSV export and Wi-Fi posters. Designed and built by Collabs Developers.</p>
+                </div>
+                <nav aria-label="Generators">
+                    <h2>Generators</h2>
+                    <ul>
+                        <li><a href="/?type=link#generator" data-type-link="link">URL QR code</a></li>
+                        <li><a href="/?type=wifi#generator" data-type-link="wifi">Wi-Fi QR code</a></li>
+                        <li><a href="/?type=vcard#generator" data-type-link="vcard">vCard QR code</a></li>
+                        <li><a href="/?type=whatsapp#generator" data-type-link="whatsapp">WhatsApp QR code</a></li>
+                        <li><a href="/?type=bulk#generator" data-type-link="bulk">Bulk QR codes</a></li>
+                    </ul>
+                </nav>
+                <nav aria-label="Company">
+                    <h2>Company</h2>
+                    <ul>
+                        <li><a href="/about.html">About us</a></li>
+                        <li><a href="/contact.html">Contact</a></li>
+                        <li><a href="/privacy.html">Privacy policy</a></li>
+                        <li><a href="/terms.html">Terms of service</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <span>&copy; 2026 QR Lab. All rights reserved.</span>
+                <span>Made with care by <strong>Collabs Developers</strong></span>
+            </div>
         </div>
-        
-        <div class="faq-item">
-            <h3>Do these QR codes expire?</h3>
-            <p>No, the QR codes generated by QR Lab are completely static. This means the destination data is encoded directly into the image. They will work forever as long as the destination (like your website link) remains active.</p>
-        </div>
-        
-        <div class="faq-item">
-            <h3>How do I make QR Codes in bulk?</h3>
-            <p>Use the "Bulk" tab in our generator! Simply create a spreadsheet in Excel or Google Sheets. In column A, type the filename you want. In column B, paste the link or text. Save the file as a .CSV, upload it here, and our tool will compress all your QR codes into a single ZIP file instantly.</p>
-        </div>
-
-        <div class="faq-item">
-            <h3>Why should I add a custom logo?</h3>
-            <p>Adding a logo to the center of your QR code increases brand recognition and trust. People are much more likely to scan a code if they recognize the brand logo inside it.</p>
-        </div>
-
-        <div class="faq-item">
-            <h3>What is Error Correction Level?</h3>
-            <p>Error correction allows a QR code to be readable even if part of it is covered, damaged, or blurred. If you are adding a custom logo to the center of your code, we highly recommend keeping the Error Correction on "High" to ensure it scans perfectly every time.</p>
-        </div>
-
-        <div class="faq-item">
-            <h3>Can I use these QR codes for commercial print?</h3>
-            <p>Absolutely! For the best print results, open the "Customize Design" menu and select the <b>High-Res (800px)</b> option. The downloaded PNG image will be razor-sharp, making it perfect for business cards, flyers, posters, and product packaging.</p>
-        </div>
-    </div>
-
-    <footer>
-        <div style="margin-bottom: 15px; display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;">
-            <a href="about.html" style="color: var(--primary-color); text-decoration: none; font-weight: 600; font-size: 14px;">About Us</a>
-            <a href="privacy.html" style="color: var(--primary-color); text-decoration: none; font-weight: 600; font-size: 14px;">Privacy Policy</a>
-            <a href="terms.html" style="color: var(--primary-color); text-decoration: none; font-weight: 600; font-size: 14px;">Terms of Service</a>
-            <a href="contact.html" style="color: var(--primary-color); text-decoration: none; font-weight: 600; font-size: 14px;">Contact</a>
-        </div>
-        <p>&copy; 2026 QR Lab. Designed and built by <b>Collabs Developers</b>.</p>
     </footer>
 
-    <div id="toast-container"></div>
+    <div id="toast-container" role="status" aria-live="polite"></div>
 
-    <div id="print-area">
+    <div id="print-area" aria-hidden="true">
         <div class="print-wrapper">
-            <h1>Scan to Connect</h1>
+            <p class="print-title">Scan to Connect</p>
             <p class="print-instruction">Point your phone's camera at the code below to join instantly.</p>
-            <img id="print-qr-img" src="" alt="Wi-Fi QR Code">
+            <img id="print-qr-img" src="data:," alt="Wi-Fi QR Code">
             <div class="print-details">
-                <h2>Network: <span id="print-ssid-text"></span></h2>
-                <h3>Password: <span id="print-pass-text"></span></h3>
+                <p class="print-network">Network: <span id="print-ssid-text"></span></p>
+                <p class="print-pass">Password: <span id="print-pass-text"></span></p>
             </div>
         </div>
     </div>
 
-    <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    
-    <script type="module" src="js/main.js"></script>
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const dropdown = document.getElementById('tabDropdown');
-            const header = document.getElementById('dropdownHeader');
-            const headerContent = header.querySelector('.header-content');
-            const tabBtns = dropdown.querySelectorAll('.tab-btn');
-
-            header.addEventListener('click', () => dropdown.classList.toggle('open'));
-
-            tabBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    headerContent.innerHTML = btn.innerHTML;
-                    dropdown.classList.remove('open');
-                });
-            });
-
-            const designContainer = document.getElementById('designDropdownContainer');
-            const toggleDesignBtn = document.getElementById('toggle-design-btn');
-            const designOptions = document.getElementById('design-options');
-            const designChevron = toggleDesignBtn.querySelector('.chevron');
-
-            toggleDesignBtn.addEventListener('click', () => {
-                designContainer.classList.toggle('open');
-                if (designContainer.classList.contains('open')) {
-                    designOptions.style.display = 'block';
-                } else {
-                    designOptions.style.display = 'none';
-                }
-            });
-
-            document.addEventListener('click', (e) => {
-                if (!dropdown.contains(e.target)) dropdown.classList.remove('open');
-                if (!designContainer.contains(e.target)) {
-                    designContainer.classList.remove('open');
-                    designOptions.style.display = 'none';
-                    if(designChevron) designChevron.style.transform = 'rotate(0deg)';
-                }
-            });
-        });
-    </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const themeToggle = document.getElementById('theme-toggle');
-            const body = document.body;
-
-            const sunIcon = `<svg width="28" height="28" fill="none" stroke="#f59e0b" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
-            const moonIcon = `<svg width="28" height="28" fill="none" stroke="#3b82f6" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path></svg>`;
-
-            if (localStorage.getItem('theme') === 'dark') {
-                body.classList.add('dark-mode');
-                themeToggle.innerHTML = sunIcon;
-            } else {
-                body.classList.remove('dark-mode');
-                themeToggle.innerHTML = moonIcon;
-            }
-
-            themeToggle.addEventListener('click', () => {
-                body.classList.toggle('dark-mode');
-                if (body.classList.contains('dark-mode')) {
-                    localStorage.setItem('theme', 'dark');
-                    themeToggle.innerHTML = sunIcon;
-                } else {
-                    localStorage.setItem('theme', 'light');
-                    themeToggle.innerHTML = moonIcon;
-                }
-            });
-        });
-    </script>
+    <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js" crossorigin></script>
+    <script type="module" src="/js/main.js"></script>
+    <script type="module" src="/js/site.js"></script>
 </body>
 </html>

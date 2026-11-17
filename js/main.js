@@ -1,233 +1,529 @@
 import { showToast, printPoster } from './ui.js';
-import { processBulkCSV } from './bulk.js';
+import { processBulkCSV, downloadSampleCSV, parseCSV, MAX_ROWS } from './bulk.js';
 
-// --- STATE & DOM ELEMENTS ---
-const qrWrapper = document.getElementById('qr-wrapper-container'); // Controls the new hover overlay
-const qrCodeDiv = document.getElementById('qr-code');
-const downloadBtn = document.getElementById('download-btn');
-const fgColor = document.getElementById('fg-color');
-const bgColor = document.getElementById('bg-color');
-const sizeSelect = document.getElementById('size-select');
-const dotStyle = document.getElementById('dot-style');
-const errorCorrection = document.getElementById('error-correction');
-const logoInput = document.getElementById('logo-input');
-const removeLogoBtn = document.getElementById('remove-logo-btn');
-let currentLogoUrl = ""; 
+const $ = id => document.getElementById(id);
+const PREVIEW_SIZE = 600; // rendered size of the on-screen preview (scaled down by CSS, crisp on retina)
+const TYPES = ['link', 'wifi', 'vcard', 'email', 'whatsapp', 'sms', 'phone', 'bulk'];
+const TYPE_LABELS = { link: 'URL / Text', wifi: 'Wi-Fi', vcard: 'Contact', email: 'Email', whatsapp: 'WhatsApp', sms: 'SMS', phone: 'Phone', bulk: 'Bulk' };
+const SAMPLE_DATA = 'https://www.qrlab.eu.org';
 
-let currentDataString = "";
-let currentDataType = "";
+// ---------- DOM ----------
+const qrCodeDiv = $('qr-code');
+const qrEmpty = $('qr-empty');
+const qrMeta = $('qr-meta');
+const downloadBtn = $('download-btn');
+const downloadSvgBtn = $('download-svg-btn');
+const copyBtn = $('copy-btn');
+const shareBtn = $('share-btn');
 
-const qrInput = document.getElementById('qr-input');
-const wifiSsid = document.getElementById('wifi-ssid');
-const wifiPass = document.getElementById('wifi-pass');
-const wifiType = document.getElementById('wifi-type');
-const vcFname = document.getElementById('vc-fname');
-const vcLname = document.getElementById('vc-lname');
-const vcPhone = document.getElementById('vc-phone');
-const vcEmail = document.getElementById('vc-email');
-const vcCompany = document.getElementById('vc-company');
-const emailTo = document.getElementById('email-to');
-const emailSub = document.getElementById('email-sub');
-const emailBody = document.getElementById('email-body');
-const waPhone = document.getElementById('wa-phone');
-const waMsg = document.getElementById('wa-msg');
+const fgColor = $('fg-color'), bgColor = $('bg-color'), fg2Color = $('fg2-color');
+const useGradient = $('use-gradient');
+const sizeSelect = $('size-select');
+const errorCorrection = $('error-correction');
+const logoInput = $('logo-input');
+const removeLogoBtn = $('remove-logo-btn');
+const designPanel = $('design-panel');
 
-const tabBtns = document.querySelectorAll('.tab-btn');
-const tabContents = document.querySelectorAll('.tab-content');
-let activeTab = 'tab-link'; 
+const tabBtns = [...document.querySelectorAll('.type-btn')];
+const csvInput = $('csv-input');
+const bulkBtn = $('bulk-generate-btn');
 
-// --- HISTORY LOGIC ---
-const historySection = document.getElementById('history-section');
-const historyList = document.getElementById('history-list');
-let qrHistory = JSON.parse(localStorage.getItem('qr_lab_history')) || [];
+// Fields per type, used for generation, clearing and history restore
+const FIELDS = {
+    link: ['qr-input'],
+    wifi: ['wifi-ssid', 'wifi-pass', 'wifi-type', 'wifi-hidden'],
+    vcard: ['vc-fname', 'vc-lname', 'vc-phone', 'vc-email', 'vc-company', 'vc-title', 'vc-url'],
+    email: ['email-to', 'email-sub', 'email-body'],
+    whatsapp: ['wa-phone', 'wa-msg'],
+    sms: ['sms-phone', 'sms-msg'],
+    phone: ['tel-phone'],
+    bulk: []
+};
 
-function saveToHistory(data, type) {
-    if (qrHistory.length > 0 && qrHistory[0].data === data) return;
+// ---------- State ----------
+let activeType = 'link';
+let logoUrl = '';
+let current = { data: '', label: '' };
+let csvFile = null;
+let csvFirstRow = '';
 
-    const historyItem = {
-        data: data, type: type,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        settings: {
-            fg: fgColor.value, bg: bgColor.value, style: dotStyle.value,
-            size: sizeSelect.value, error: errorCorrection.value 
-        }
+const v = id => {
+    const el = $(id);
+    return el.type === 'checkbox' ? el.checked : el.value.trim();
+};
+
+// ---------- Payload builders ----------
+const escWifi = s => s.replace(/([\\;,:"])/g, '\\$1');
+const escVcard = s => s.replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/([;,])/g, '\\$1');
+
+const builders = {
+    link() {
+        let text = v('qr-input');
+        if (!text) return null;
+        if (/^www\.[^\s]+\.[^\s]+$/i.test(text)) text = 'https://' + text;
+        return { data: text, label: text };
+    },
+    wifi() {
+        const ssid = v('wifi-ssid');
+        if (!ssid) return null;
+        const type = v('wifi-type');
+        const pass = type === 'nopass' ? '' : v('wifi-pass');
+        let data = `WIFI:T:${type};S:${escWifi(ssid)};`;
+        if (pass) data += `P:${escWifi(pass)};`;
+        if (v('wifi-hidden')) data += 'H:true;';
+        return { data: data + ';', label: ssid };
+    },
+    vcard() {
+        const fn = v('vc-fname'), ln = v('vc-lname'), tel = v('vc-phone'), email = v('vc-email');
+        if (!fn && !ln && !tel && !email) return null;
+        const full = [fn, ln].filter(Boolean).join(' ');
+        const lines = ['BEGIN:VCARD', 'VERSION:3.0', `N:${escVcard(ln)};${escVcard(fn)};;;`, `FN:${escVcard(full || tel || email)}`];
+        if (v('vc-company')) lines.push(`ORG:${escVcard(v('vc-company'))}`);
+        if (v('vc-title')) lines.push(`TITLE:${escVcard(v('vc-title'))}`);
+        if (tel) lines.push(`TEL;TYPE=CELL:${tel}`);
+        if (email) lines.push(`EMAIL:${email}`);
+        if (v('vc-url')) lines.push(`URL:${v('vc-url')}`);
+        lines.push('END:VCARD');
+        return { data: lines.join('\n'), label: full || tel || email };
+    },
+    email() {
+        const to = v('email-to');
+        if (!to) return null;
+        const params = [];
+        if (v('email-sub')) params.push('subject=' + encodeURIComponent(v('email-sub')));
+        if (v('email-body')) params.push('body=' + encodeURIComponent(v('email-body')));
+        return { data: `mailto:${to}${params.length ? '?' + params.join('&') : ''}`, label: to };
+    },
+    whatsapp() {
+        const num = v('wa-phone').replace(/\D/g, '').replace(/^00/, '');
+        if (!num) return null;
+        const msg = v('wa-msg');
+        return { data: `https://wa.me/${num}${msg ? '?text=' + encodeURIComponent(msg) : ''}`, label: '+' + num };
+    },
+    sms() {
+        const num = v('sms-phone').replace(/[^\d+]/g, '');
+        if (!num) return null;
+        return { data: `SMSTO:${num}:${v('sms-msg')}`, label: num };
+    },
+    phone() {
+        const num = v('tel-phone').replace(/[^\d+]/g, '');
+        if (!num) return null;
+        return { data: `tel:${num}`, label: num };
+    },
+    bulk() {
+        return { data: csvFirstRow || SAMPLE_DATA, label: '' };
+    }
+};
+
+// ---------- Design options ----------
+const radio = name => document.querySelector(`input[name="${name}"]:checked`)?.value;
+
+function buildOptions(size, data) {
+    const fg = fgColor.value, fg2 = fg2Color.value, bg = bgColor.value;
+    const gradient = useGradient.checked
+        ? { type: 'linear', rotation: Math.PI / 4, colorStops: [{ offset: 0, color: fg }, { offset: 1, color: fg2 }] }
+        : undefined;
+    const corner = radio('corner-style') || 'square';
+    return {
+        width: size,
+        height: size,
+        margin: Math.round(size * 0.045), // quiet zone: scanners need a light border around the code
+        data,
+        image: logoUrl || '',
+        qrOptions: { errorCorrectionLevel: errorCorrection.value },
+        dotsOptions: { type: radio('dot-style') || 'square', color: fg, gradient },
+        cornersSquareOptions: { type: corner, color: fg, gradient },
+        cornersDotOptions: { type: corner === 'square' ? 'square' : 'dot', color: fg, gradient },
+        backgroundOptions: { color: bg },
+        imageOptions: { crossOrigin: 'anonymous', margin: 6, imageSize: 0.35, hideBackgroundDots: true }
     };
+}
 
-    qrHistory.unshift(historyItem); 
-    if (qrHistory.length > 5) qrHistory.pop(); 
-    localStorage.setItem('qr_lab_history', JSON.stringify(qrHistory));
+// ---------- Preview ----------
+const preview = new QRCodeStyling({ ...buildOptions(PREVIEW_SIZE, SAMPLE_DATA), type: 'canvas' });
+preview.append(qrCodeDiv);
+
+function setActionsEnabled(on) {
+    [downloadBtn, downloadSvgBtn, copyBtn, shareBtn].forEach(b => (b.disabled = !on));
+}
+
+let renderTimer = null;
+function scheduleRender() {
+    clearTimeout(renderTimer);
+    renderTimer = setTimeout(render, 90);
+}
+
+function render() {
+    const result = builders[activeType]();
+    if (!result) {
+        current = { data: '', label: '' };
+        qrCodeDiv.hidden = true;
+        qrEmpty.hidden = false;
+        qrMeta.textContent = '';
+        setActionsEnabled(false);
+        return;
+    }
+    current = result;
+    preview.update(buildOptions(PREVIEW_SIZE, result.data));
+    qrCodeDiv.hidden = false;
+    qrEmpty.hidden = true;
+
+    if (activeType === 'bulk') {
+        qrMeta.textContent = csvFirstRow ? 'Preview of the first row. This design applies to every code.' : 'Design preview. Applies to every code in your CSV.';
+        setActionsEnabled(false);
+    } else {
+        qrMeta.textContent = `${TYPE_LABELS[activeType]} · ${result.data.length} characters`;
+        setActionsEnabled(true);
+    }
+    updateContrastWarning();
+    saveDesign();
+}
+
+// ---------- Contrast check ----------
+function luminance(hex) {
+    const c = hex.replace('#', '').match(/.{2}/g).map(x => {
+        const s = parseInt(x, 16) / 255;
+        return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+}
+function contrast(a, b) {
+    const [l1, l2] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+    return (l1 + 0.05) / (l2 + 0.05);
+}
+function updateContrastWarning() {
+    const bg = bgColor.value;
+    const fgs = useGradient.checked ? [fgColor.value, fg2Color.value] : [fgColor.value];
+    const bad = fgs.some(fg => contrast(fg, bg) < 3 || luminance(fg) > luminance(bg));
+    $('contrast-warn').hidden = !bad;
+}
+
+// ---------- Tabs ----------
+function selectTab(type, { focus = false } = {}) {
+    if (!TYPES.includes(type)) type = 'link';
+    activeType = type;
+    tabBtns.forEach(btn => {
+        const on = btn.dataset.type === type;
+        btn.setAttribute('aria-selected', on);
+        btn.tabIndex = on ? 0 : -1;
+        if (on && focus) btn.focus();
+    });
+    TYPES.forEach(t => ($(`tab-${t}`).hidden = t !== type));
+    render();
+}
+
+tabBtns.forEach((btn, i) => {
+    btn.addEventListener('click', () => selectTab(btn.dataset.type));
+    btn.addEventListener('keydown', e => {
+        const keys = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+        let next = null;
+        if (e.key in keys) next = (i + keys[e.key] + tabBtns.length) % tabBtns.length;
+        if (e.key === 'Home') next = 0;
+        if (e.key === 'End') next = tabBtns.length - 1;
+        if (next !== null) { e.preventDefault(); selectTab(tabBtns[next].dataset.type, { focus: true }); }
+    });
+});
+
+// Links like /?type=wifi#generator switch tabs without reloading
+document.querySelectorAll('[data-type-link]').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault();
+    selectTab(a.dataset.typeLink);
+    $('generator').scrollIntoView({ behavior: 'smooth' });
+    history.replaceState(null, '', a.getAttribute('href'));
+}));
+
+// ---------- Inputs ----------
+Object.values(FIELDS).flat().forEach(id => {
+    const el = $(id);
+    el.addEventListener('input', scheduleRender);
+    el.addEventListener('change', scheduleRender);
+});
+$('wifi-type').addEventListener('change', () => {
+    $('wifi-pass').disabled = $('wifi-type').value === 'nopass';
+});
+
+document.querySelectorAll('[data-clear]').forEach(btn => btn.addEventListener('click', () => {
+    const type = btn.dataset.clear.replace('tab-', '');
+    FIELDS[type].forEach(id => {
+        const el = $(id);
+        if (el.type === 'checkbox') el.checked = false;
+        else if (el.tagName !== 'SELECT') el.value = '';
+    });
+    render();
+    $(FIELDS[type][0])?.focus();
+}));
+
+// ---------- Design controls ----------
+const swatches = [...document.querySelectorAll('.swatch')];
+
+function syncHex() {
+    $('fg-hex').textContent = fgColor.value;
+    $('bg-hex').textContent = bgColor.value;
+    $('fg2-hex').textContent = fg2Color.value;
+    $('fg2-wrap').hidden = !useGradient.checked;
+}
+
+function markSwatch() {
+    swatches.forEach(s => {
+        const match = s.dataset.fg === fgColor.value && s.dataset.bg === bgColor.value &&
+            (s.dataset.fg2 ? useGradient.checked && s.dataset.fg2 === fg2Color.value : !useGradient.checked);
+        s.setAttribute('aria-pressed', match);
+    });
+}
+
+swatches.forEach(s => s.addEventListener('click', () => {
+    fgColor.value = s.dataset.fg;
+    bgColor.value = s.dataset.bg;
+    useGradient.checked = !!s.dataset.fg2;
+    if (s.dataset.fg2) fg2Color.value = s.dataset.fg2;
+    syncHex(); markSwatch(); render();
+}));
+
+[fgColor, bgColor, fg2Color, useGradient, sizeSelect, errorCorrection].forEach(el => {
+    el.addEventListener('input', () => { syncHex(); markSwatch(); scheduleRender(); });
+    el.addEventListener('change', () => { syncHex(); markSwatch(); scheduleRender(); });
+});
+document.querySelectorAll('input[name="dot-style"], input[name="corner-style"]').forEach(r => r.addEventListener('change', render));
+
+// Persist design between visits (logo excluded: it can be large)
+const DESIGN_KEY = 'qr_lab_design';
+function saveDesign() {
+    try {
+        localStorage.setItem(DESIGN_KEY, JSON.stringify({
+            fg: fgColor.value, bg: bgColor.value, fg2: fg2Color.value, grad: useGradient.checked,
+            dot: radio('dot-style'), corner: radio('corner-style'), size: sizeSelect.value, ec: errorCorrection.value
+        }));
+    } catch (e) { /* ignore */ }
+}
+function applyDesign(d) {
+    if (!d) return;
+    if (d.fg) fgColor.value = d.fg;
+    if (d.bg) bgColor.value = d.bg;
+    if (d.fg2) fg2Color.value = d.fg2;
+    useGradient.checked = !!d.grad;
+    if (d.size && [...sizeSelect.options].some(o => o.value === d.size)) sizeSelect.value = d.size;
+    if (d.ec) errorCorrection.value = d.ec;
+    const dot = document.querySelector(`input[name="dot-style"][value="${d.dot}"]`);
+    if (dot) dot.checked = true;
+    const corner = document.querySelector(`input[name="corner-style"][value="${d.corner}"]`);
+    if (corner) corner.checked = true;
+    syncHex(); markSwatch();
+}
+try { applyDesign(JSON.parse(localStorage.getItem(DESIGN_KEY))); } catch (e) { /* ignore */ }
+
+// ---------- Logo ----------
+function setLogo(file) {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { showToast('Please choose an image file.', 'error'); return; }
+    if (file.size > 5 * 1024 * 1024) { showToast('Logo must be under 5 MB.', 'error'); return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+        logoUrl = e.target.result;
+        const thumb = $('logo-thumb');
+        thumb.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = logoUrl; img.alt = '';
+        thumb.appendChild(img);
+        $('logo-label').textContent = file.name;
+        removeLogoBtn.hidden = false;
+        errorCorrection.value = 'H';
+        render();
+        showToast('Logo added. Error correction set to High.', 'success');
+    };
+    reader.readAsDataURL(file);
+}
+logoInput.addEventListener('change', e => setLogo(e.target.files[0]));
+removeLogoBtn.addEventListener('click', () => {
+    logoUrl = '';
+    logoInput.value = '';
+    $('logo-thumb').innerHTML = '<svg class="i"><use href="/icons/sprite.svg#i-image"/></svg>';
+    $('logo-label').textContent = 'Upload your logo';
+    removeLogoBtn.hidden = true;
+    render();
+    showToast('Logo removed.', 'info');
+});
+
+// Drag & drop for both dropzones
+function enableDrop(zone, onFile) {
+    ['dragenter', 'dragover'].forEach(ev => zone.addEventListener(ev, e => { e.preventDefault(); zone.classList.add('dragover'); }));
+    ['dragleave', 'drop'].forEach(ev => zone.addEventListener(ev, () => zone.classList.remove('dragover')));
+    zone.addEventListener('drop', e => { e.preventDefault(); onFile(e.dataTransfer.files[0]); });
+}
+enableDrop($('logo-drop'), setLogo);
+
+// ---------- Download / copy / share ----------
+function fileName() {
+    const slug = (current.label || 'code').toLowerCase().replace(/^https?:\/\//, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
+    return `qr-lab-${activeType}-${slug || 'code'}`;
+}
+
+function exporter(type = 'canvas') {
+    const size = parseInt(sizeSelect.value, 10);
+    return new QRCodeStyling({ ...buildOptions(size, current.data), type });
+}
+
+downloadBtn.addEventListener('click', async () => {
+    if (!current.data) return;
+    await exporter().download({ name: fileName(), extension: 'png' });
+    saveToHistory();
+    showToast('PNG downloaded and saved to history.', 'success');
+});
+
+downloadSvgBtn.addEventListener('click', async () => {
+    if (!current.data) return;
+    await exporter('svg').download({ name: fileName(), extension: 'svg' });
+    saveToHistory();
+    showToast('SVG downloaded. Scales to any size.', 'success');
+});
+
+const canCopy = !!(navigator.clipboard && window.ClipboardItem);
+copyBtn.hidden = !canCopy;
+copyBtn.addEventListener('click', async () => {
+    try {
+        const blob = await exporter().getRawData('png');
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        showToast('QR code copied to clipboard.', 'success');
+    } catch (e) {
+        showToast('Copy is not supported in this browser.', 'error');
+    }
+});
+
+// Web Share with files (mostly mobile)
+try {
+    const probe = new File([''], 'x.png', { type: 'image/png' });
+    shareBtn.hidden = !(navigator.canShare && navigator.canShare({ files: [probe] }));
+} catch (e) { shareBtn.hidden = true; }
+shareBtn.addEventListener('click', async () => {
+    try {
+        const blob = await exporter().getRawData('png');
+        const file = new File([blob], fileName() + '.png', { type: 'image/png' });
+        await navigator.share({ files: [file], title: 'QR code', text: 'Made with QR Lab: https://www.qrlab.eu.org' });
+        saveToHistory();
+    } catch (e) {
+        if (e.name !== 'AbortError') showToast('Sharing failed.', 'error');
+    }
+});
+
+$('print-wifi-btn').addEventListener('click', () => {
+    printPoster(v('wifi-ssid'), $('wifi-type').value === 'nopass' ? '' : v('wifi-pass'), qrCodeDiv.querySelector('canvas'));
+});
+
+// ---------- History ----------
+const HISTORY_KEY = 'qr_lab_history';
+const historySection = $('history-section');
+const historyList = $('history-list');
+let qrHistory = [];
+try { qrHistory = JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch (e) { qrHistory = []; }
+
+function saveToHistory() {
+    if (qrHistory[0]?.data === current.data) return;
+    const fields = {};
+    FIELDS[activeType].forEach(id => { const el = $(id); fields[id] = el.type === 'checkbox' ? el.checked : el.value; });
+    qrHistory.unshift({
+        type: activeType,
+        data: current.data,
+        label: current.label,
+        fields,
+        timestamp: new Date().toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+    });
+    qrHistory = qrHistory.slice(0, 6);
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(qrHistory)); } catch (e) { /* ignore */ }
     renderHistory();
 }
 
 function renderHistory() {
-    if (qrHistory.length === 0) { historySection.style.display = 'none'; return; }
-    historySection.style.display = 'block';
-    historyList.innerHTML = '';
-
-    qrHistory.forEach((item, index) => {
-        const div = document.createElement('div');
-        div.className = 'history-item';
-        div.innerHTML = `
-            <div class="history-info">
-                <span class="history-title">${item.data}</span>
-                <span class="history-meta">${item.timestamp}</span>
-            </div>
-            <span class="history-tag">${item.type}</span>
-        `;
-        div.onclick = () => loadHistoryItem(index);
-        historyList.appendChild(div);
-    });
+    historySection.hidden = qrHistory.length === 0;
+    historyList.replaceChildren(...qrHistory.map((item, i) => {
+        const li = document.createElement('li');
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'history-item';
+        const info = document.createElement('span');
+        info.className = 'history-info';
+        const title = document.createElement('span');
+        title.className = 'history-title';
+        title.textContent = item.label || item.data; // textContent: never inject user data as HTML
+        const meta = document.createElement('span');
+        meta.className = 'history-meta';
+        meta.textContent = item.timestamp;
+        info.append(title, meta);
+        const tag = document.createElement('span');
+        tag.className = 'history-tag';
+        tag.textContent = TYPE_LABELS[item.type] || item.type;
+        btn.append(info, tag);
+        btn.addEventListener('click', () => loadHistoryItem(i));
+        li.appendChild(btn);
+        return li;
+    }));
 }
 
-function loadHistoryItem(index) {
-    const item = qrHistory[index];
-    const targetBtn = document.querySelector(`[data-target="tab-${item.type.toLowerCase()}"]`);
-    if(targetBtn) targetBtn.click();
-
-    if (item.type === 'link') qrInput.value = item.data;
-    fgColor.value = item.settings.fg; bgColor.value = item.settings.bg;
-    dotStyle.value = item.settings.style; sizeSelect.value = item.settings.size;
-    if(item.settings.error) errorCorrection.value = item.settings.error;
-
-    generateQR();
-    showToast('Loaded from history', 'info');
+function loadHistoryItem(i) {
+    const item = qrHistory[i];
+    if (!item) return;
+    const type = TYPES.includes(item.type) ? item.type : 'link';
+    if (item.fields) {
+        Object.entries(item.fields).forEach(([id, val]) => {
+            const el = $(id);
+            if (!el) return;
+            if (el.type === 'checkbox') el.checked = !!val; else el.value = val;
+        });
+    } else if (type === 'link') {
+        $('qr-input').value = item.data; // entries saved by the previous version
+    }
+    selectTab(type);
+    showToast('Loaded from history.', 'info');
 }
 
-document.getElementById('clear-history-btn').onclick = () => {
+$('clear-history-btn').addEventListener('click', () => {
     qrHistory = [];
-    localStorage.removeItem('qr_lab_history');
+    try { localStorage.removeItem(HISTORY_KEY); } catch (e) { /* ignore */ }
     renderHistory();
-    showToast('History cleared', 'info');
-};
-
-// --- CORE GENERATOR LOGIC ---
-const qrCodeMaker = new QRCodeStyling({
-    width: 300, height: 300, type: "canvas",
-    imageOptions: { crossOrigin: "anonymous", margin: 10 }
+    showToast('History cleared.', 'info');
 });
 
-function generateQR() {
-    if (activeTab === 'tab-bulk') { hideQR(); return; }
-
-    if (activeTab === 'tab-link') {
-        currentDataString = qrInput.value.trim(); currentDataType = 'link';
-        if (currentDataString === '') { hideQR(); return; }
-    } 
-    else if (activeTab === 'tab-wifi') {
-        currentDataType = 'wifi';
-        if (wifiSsid.value.trim() === '') { hideQR(); return; }
-        currentDataString = `WIFI:T:${wifiType.value};S:${wifiSsid.value.trim()};P:${wifiPass.value.trim()};;`;
-    }
-    else if (activeTab === 'tab-vcard') {
-        const fn = vcFname.value.trim(); currentDataType = 'vcard';
-        if (fn === '' && vcPhone.value.trim() === '') { hideQR(); return; } 
-        currentDataString = `BEGIN:VCARD\nVERSION:3.0\nN:;${fn}\nTEL:${vcPhone.value.trim()}\nEND:VCARD`;
-    }
-    else if (activeTab === 'tab-email') {
-        currentDataType = 'email';
-        if (emailTo.value.trim() === '') { hideQR(); return; }
-        currentDataString = `mailto:${emailTo.value.trim()}?subject=${encodeURIComponent(emailSub.value.trim())}`;
-    }
-    else if (activeTab === 'tab-whatsapp') {
-        currentDataType = 'whatsapp';
-        if (waPhone.value.trim() === '') { hideQR(); return; }
-        currentDataString = `https://wa.me/${waPhone.value.trim()}`;
-    }
-
-    qrCodeMaker.update({
-        data: currentDataString, width: parseInt(sizeSelect.value), height: parseInt(sizeSelect.value),
-        image: currentLogoUrl, dotsOptions: { color: fgColor.value, type: dotStyle.value },
-        backgroundOptions: { color: bgColor.value }, qrOptions: { errorCorrectionLevel: errorCorrection.value } 
-    });
-
-    qrCodeDiv.innerHTML = ''; qrCodeMaker.append(qrCodeDiv); 
-    
-    // THE FIX: Displays the wrapper so the hover-download button works properly!
-    qrCodeDiv.style.display = 'flex'; 
-    qrWrapper.style.display = 'flex'; 
+// ---------- Bulk ----------
+async function setCsv(file) {
+    if (!file) return;
+    if (!/\.csv$/i.test(file.name) && file.type !== 'text/csv') { showToast('Please choose a .csv file.', 'error'); return; }
+    csvFile = file;
+    const rows = parseCSV(await file.text());
+    const dataRows = rows.filter((r, idx) => !(idx === 0 && /^(file ?name|name)$/i.test(r[0])));
+    csvFirstRow = dataRows[0]?.[1] || '';
+    $('csv-file-name').textContent = file.name;
+    $('csv-file-info').textContent = `${Math.min(dataRows.length, MAX_ROWS)} QR code${dataRows.length === 1 ? '' : 's'} ready`;
+    bulkBtn.disabled = dataRows.length === 0;
+    render();
 }
+csvInput.addEventListener('change', e => setCsv(e.target.files[0]));
+enableDrop($('csv-drop'), setCsv);
+$('sample-csv').addEventListener('click', e => { e.preventDefault(); downloadSampleCSV(); });
 
-function hideQR() { 
-    qrWrapper.style.display = 'none'; 
-    qrCodeDiv.style.display = 'none'; 
-}
+bulkBtn.addEventListener('click', async () => {
+    if (!csvFile) return;
+    const label = bulkBtn.querySelector('span');
+    const progress = $('bulk-progress');
+    const bar = progress.firstElementChild;
+    bulkBtn.disabled = true;
+    progress.hidden = false;
+    bar.style.width = '0%';
+    try {
+        const opts = buildOptions(parseInt(sizeSelect.value, 10), SAMPLE_DATA);
+        await processBulkCSV(csvFile, opts, (done, total) => {
+            bar.style.width = `${Math.round((done / total) * 100)}%`;
+            label.textContent = `Generating ${done} / ${total}…`;
+        });
+    } catch (e) {
+        showToast('Bulk generation failed. Check your connection and try again.', 'error');
+    } finally {
+        label.textContent = 'Generate & download ZIP';
+        bulkBtn.disabled = false;
+        setTimeout(() => (progress.hidden = true), 800);
+    }
+});
 
+// ---------- Init ----------
+if (window.matchMedia('(min-width: 920px)').matches) designPanel.open = true;
+syncHex();
+markSwatch();
 renderHistory();
-
-// --- EVENT LISTENERS ---
-tabBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-        tabBtns.forEach(b => b.classList.remove('active'));
-        tabContents.forEach(c => c.classList.remove('active'));
-        btn.classList.add('active');
-        activeTab = btn.getAttribute('data-target');
-        document.getElementById(activeTab).classList.add('active');
-        hideQR(); generateQR(); 
-    });
-});
-
-const allInputs = [qrInput, wifiSsid, wifiPass, wifiType, sizeSelect, fgColor, bgColor, dotStyle, errorCorrection, vcFname, vcPhone, emailTo, waPhone];
-allInputs.forEach(input => {
-    input.addEventListener('input', generateQR);
-    if(input.tagName === 'SELECT') input.addEventListener('change', generateQR);
-});
-
-downloadBtn.addEventListener('click', () => {
-    qrCodeMaker.download({ name: `QR_Lab`, extension: "png" });
-    saveToHistory(currentDataString, currentDataType);
-    showToast('✅ Downloaded & Saved to History!', 'success');
-});
-
-logoInput.addEventListener('change', (e) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-        currentLogoUrl = event.target.result; 
-        removeLogoBtn.style.display = 'inline-block'; 
-        errorCorrection.value = 'H'; 
-        generateQR(); 
-        showToast('Logo added! Error correction set to High.', 'success');
-    };
-    reader.readAsDataURL(e.target.files[0]);
-});
-
-document.getElementById('remove-logo-btn').addEventListener('click', () => {
-    currentLogoUrl = ""; logoInput.value = ""; 
-    document.getElementById('remove-logo-btn').style.display = 'none'; 
-    generateQR(); showToast('Logo removed.', 'info'); 
-});
-
-// Clear Buttons
-document.getElementById('clear-link-btn').addEventListener('click', () => { qrInput.value = ''; hideQR(); qrInput.focus(); });
-document.getElementById('clear-wifi-btn').addEventListener('click', () => { wifiSsid.value = ''; wifiPass.value = ''; hideQR(); wifiSsid.focus(); });
-document.getElementById('clear-vcard-btn').addEventListener('click', () => { vcFname.value=''; vcLname.value=''; vcPhone.value=''; vcEmail.value=''; vcCompany.value=''; hideQR(); vcFname.focus(); });
-document.getElementById('clear-email-btn').addEventListener('click', () => { emailTo.value=''; emailSub.value=''; emailBody.value=''; hideQR(); emailTo.focus(); });
-document.getElementById('clear-wa-btn').addEventListener('click', () => { waPhone.value=''; waMsg.value=''; hideQR(); waPhone.focus(); });
-
-// Calling imported functions!
-document.getElementById('print-wifi-btn').addEventListener('click', () => {
-    const canvas = qrCodeDiv.querySelector('canvas');
-    printPoster(wifiSsid.value, wifiPass.value, canvas);
-});
-
-const csvInput = document.getElementById('csv-input');
-const bulkGenerateBtn = document.getElementById('bulk-generate-btn');
-
-csvInput.addEventListener('change', (e) => {
-    if (e.target.files.length > 0) {
-        document.getElementById('csv-file-name').innerText = e.target.files[0].name;
-        bulkGenerateBtn.style.display = 'block';
-    } else {
-        document.getElementById('csv-file-name').innerText = 'No file chosen';
-        bulkGenerateBtn.style.display = 'none';
-    }
-});
-
-bulkGenerateBtn.addEventListener('click', () => {
-    const file = csvInput.files[0];
-    const settings = {
-        size: parseInt(sizeSelect.value), logoUrl: currentLogoUrl,
-        fgColor: fgColor.value, bgColor: bgColor.value,
-        dotStyle: dotStyle.value, errorCorrection: errorCorrection.value
-    };
-    processBulkCSV(file, settings, qrCodeMaker);
-});
+selectTab(new URLSearchParams(location.search).get('type') || 'link');
